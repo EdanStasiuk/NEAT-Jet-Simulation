@@ -241,8 +241,8 @@ public class NeatGManager : MonoBehaviour
 
     private void SpawnBody()
     {
-        /* Creates initial groul of fish GameObjects from StartingPopulation integer.
-           and matches fishObjects to their NetworkbBrains. */
+        /* Creates initial group of jet GameObjects from StartingPopulation integer.
+           and matches jetObjects to their Network Brains. */
 
         for (int i = 0; i < startingPopulation; i++)
         {
