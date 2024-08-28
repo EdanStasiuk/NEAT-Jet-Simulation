@@ -19,7 +19,7 @@ public class JetController : MonoBehaviour
     [Header("Fitness Options")]
     public float overallFitness = 0;
     public float foodMultiplier;
-    public float waypointsSinceStart = 0f;
+    public int waypointsSinceStart = 0;
 
     [Header("Network Settings")]
 

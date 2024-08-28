@@ -603,7 +603,6 @@ MonoBehaviour:
   keepBest: 5
   leaveWorst: 5
   currentAlive: 0
-  maxWaypointsHit: 0
   spawnFromSave: 0
   saveOnEnd: 0
   bestTime: 100
