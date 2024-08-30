@@ -19,7 +19,7 @@ public class JetController : MonoBehaviour
     [Header("Fitness Options")]
     public float overallFitness = 0;
     public float foodMultiplier;
-    public float waypointsSinceStart = 0f;
+    public int waypointsSinceStart = 0;
 
     [Header("Network Settings")]
 
@@ -27,6 +27,7 @@ public class JetController : MonoBehaviour
 
     [SerializeField] private float surviveTime = 0;
     [SerializeField] private int bestTime = 0;
+    [SerializeField] private int maxWaypointsHit = 0;
 
     public Color myColor;
 
@@ -52,6 +53,7 @@ public class JetController : MonoBehaviour
     void Awake()
     {
         bestTime = GameObject.FindObjectOfType<NeatGManager>().bestTime;
+        maxWaypointsHit = GameObject.FindObjectOfType<NeatGManager>().waypoints.Length;
     }
 
     // Update is called once per frame
@@ -99,6 +101,19 @@ public class JetController : MonoBehaviour
         {
             // Last waypoint was reached
             overallFitness += 100f;
+            Death();
+        }
+
+        if (waypointsSinceStart >= maxWaypointsHit)
+        {
+            // print("Save Jet");
+            GameObject.FindObjectOfType<NeatGManager>().BestFound();
+
+            if (GameObject.FindObjectOfType<NeatGManager>().saveOnEnd)
+            {
+                NeatUtilities.SaveGenome(myNetwork.myGenome);
+            }
+            
             Death();
         }
 
