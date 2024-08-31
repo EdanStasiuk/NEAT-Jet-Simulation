@@ -31,9 +31,6 @@ public class JetController : MonoBehaviour
 
     public Color myColor;
 
-    // [Range(-1f,1f)]
-    // public float acceleration, turning;
-
     public int inputNodes, outputNodes, hiddenNodes;
 
     public Transform currentWaypoint; // Next waypoint to hit
@@ -43,8 +40,7 @@ public class JetController : MonoBehaviour
 
     void Start()
     {
-        // gameObject.GetComponent<Renderer>().material.color = myColor;
-        // gameObject.GetComponent<TrailRenderer>().startColor = myColor;
+        gameObject.GetComponent<TrailRenderer>().startColor = myColor;
 
         currentEnergy = totalEnergy;
         sensors = new float[inputNodes];
