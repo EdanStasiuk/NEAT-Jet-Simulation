@@ -12,6 +12,9 @@ public class NeatGManager : MonoBehaviour
     // Waypoint management
     public Transform[] waypoints; // Array to hold waypoints in order
     public int[] currentWaypointIndex; // Track each jet's current waypoint
+    private int bestJetIndex = -1;
+    private int maxWaypointsHit = 0;
+
 
     public int inputNodes, outputNodes, hiddenNodes;
 
@@ -73,13 +76,49 @@ public class NeatGManager : MonoBehaviour
         SpeciatePopulation();
         
         SpawnBody();
-        currentGeneration += 1;
-    }
 
+        if (allNeatJets[0] != null)
+        {
+            CameraFollow cameraFollow = GameObject.FindObjectOfType<CameraFollow>();
+            cameraFollow.SetTarget(allNeatJets[0].transform);
+        }
+
+        currentGeneration += 1;
+
+    }
 
     void FixedUpdate()
     {
         currentAlive = CurrentAlive();
+
+        CameraFollow cameraFollow = GameObject.FindObjectOfType<CameraFollow>();
+
+        int newMaxWaypointsHit = 0;
+        if (!cameraFollow.IsTargetAlive() || bestJetIndex == -1 || allNeatJets[bestJetIndex] == null)
+        {
+            // Find the jet with the most waypoints hit
+            for (int i = 0; i < allNeatJets.Length; i++)
+            {
+                if (allNeatJets[i] != null)
+                {
+                    JetController jetController = allNeatJets[i].GetComponent<JetController>();
+                    if (jetController.waypointsSinceStart > maxWaypointsHit)
+                    {
+                        newMaxWaypointsHit = jetController.waypointsSinceStart;
+                        bestJetIndex = i;
+                    }
+                }
+            }
+            
+            maxWaypointsHit = newMaxWaypointsHit;
+
+            // Update the camera target to the new best jet
+            if (bestJetIndex != -1 && allNeatJets[bestJetIndex] != null)
+            {
+                cameraFollow.SetTarget(allNeatJets[bestJetIndex].transform);
+            }
+        }
+
         if (repoping == false && currentAlive <= 0)
         {
             repoping = true;
@@ -122,6 +161,7 @@ public class NeatGManager : MonoBehaviour
         // GameObject.FindObjectOfType<WaypointManager>().DestroyWaypoint(); //TODO: Will need to get rid of
         // GameObject.FindObjectOfType<WaypointManager>().SpawnWaypoint();
         SpawnBody();
+        maxWaypointsHit = 0;
         currentGeneration += 1;
     }
 
