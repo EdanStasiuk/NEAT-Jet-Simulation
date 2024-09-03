@@ -91,11 +91,31 @@ public class NeatGManager : MonoBehaviour
     {
         currentAlive = CurrentAlive();
 
+        FindNewBestJet();
+
+        // Repopulate if needed
+        if (!repoping && currentAlive <= 0)
+        {
+            repoping = true;
+            Repopulate();
+            repoping = false;
+        }
+    }
+
+    private void FindNewBestJet()
+    {
         CameraFollow cameraFollow = GameObject.FindObjectOfType<CameraFollow>();
 
         int newBestJetIndex = bestJetIndex;
         int newMaxWaypointsHit = maxWaypointsHit;
 
+        // Check if the current jet is dead
+        if (bestJetIndex != -1 && (allNeatJets[bestJetIndex] == null || !allNeatJets[bestJetIndex].gameObject.activeInHierarchy))
+        {
+            newBestJetIndex = -1;
+            newMaxWaypointsHit = 0;
+        }
+    
         // Find jet with the most waypoints hit
         for (int i = 0; i < allNeatJets.Length; i++)
         {
@@ -117,21 +137,12 @@ public class NeatGManager : MonoBehaviour
         {
             bestJetIndex = newBestJetIndex;
     
-            if (cameraFollow != null && allNeatJets[bestJetIndex] != null)
+            if (cameraFollow != null && bestJetIndex != -1)
             {
                 cameraFollow.SetTarget(allNeatJets[bestJetIndex].transform);
             }
         }
-
-        // Repopulate if needed
-        if (!repoping && currentAlive <= 0)
-        {
-            repoping = true;
-            Repopulate();
-            repoping = false;
-        }
     }
-
 
     public int CurrentAlive()
     {
