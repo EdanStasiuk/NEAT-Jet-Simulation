@@ -12,6 +12,9 @@ public class NeatGManager : MonoBehaviour
     // Waypoint management
     public Transform[] waypoints; // Array to hold waypoints in order
     public int[] currentWaypointIndex; // Track each jet's current waypoint
+    private int bestJetIndex = -1;
+    private int maxWaypointsHit = 0;
+
 
     public int inputNodes, outputNodes, hiddenNodes;
 
@@ -73,18 +76,71 @@ public class NeatGManager : MonoBehaviour
         SpeciatePopulation();
         
         SpawnBody();
-        currentGeneration += 1;
-    }
 
+        if (allNeatJets[0] != null)
+        {
+            CameraFollow cameraFollow = GameObject.FindObjectOfType<CameraFollow>();
+            cameraFollow.SetTarget(allNeatJets[0].transform);
+        }
+
+        currentGeneration += 1;
+
+    }
 
     void FixedUpdate()
     {
         currentAlive = CurrentAlive();
-        if (repoping == false && currentAlive <= 0)
+
+        FindNewBestJet();
+
+        // Repopulate if needed
+        if (!repoping && currentAlive <= 0)
         {
             repoping = true;
             Repopulate();
             repoping = false;
+        }
+    }
+
+    private void FindNewBestJet()
+    {
+        CameraFollow cameraFollow = GameObject.FindObjectOfType<CameraFollow>();
+
+        int newBestJetIndex = bestJetIndex;
+        int newMaxWaypointsHit = maxWaypointsHit;
+
+        // Check if the current jet is dead
+        if (bestJetIndex != -1 && (allNeatJets[bestJetIndex] == null || !allNeatJets[bestJetIndex].gameObject.activeInHierarchy))
+        {
+            newBestJetIndex = -1;
+            newMaxWaypointsHit = 0;
+        }
+    
+        // Find jet with the most waypoints hit
+        for (int i = 0; i < allNeatJets.Length; i++)
+        {
+            if (allNeatJets[i] != null)
+            {
+                JetController jetController = allNeatJets[i].GetComponent<JetController>();
+                if (jetController.waypointsSinceStart > newMaxWaypointsHit)
+                {
+                    newMaxWaypointsHit = jetController.waypointsSinceStart;
+                    newBestJetIndex = i;
+                }
+            }
+        }
+        
+        maxWaypointsHit = newMaxWaypointsHit;
+
+        // Reassign camera to follow new best jet
+        if (newBestJetIndex != bestJetIndex)
+        {
+            bestJetIndex = newBestJetIndex;
+    
+            if (cameraFollow != null && bestJetIndex != -1)
+            {
+                cameraFollow.SetTarget(allNeatJets[bestJetIndex].transform);
+            }
         }
     }
 
@@ -122,6 +178,15 @@ public class NeatGManager : MonoBehaviour
         // GameObject.FindObjectOfType<WaypointManager>().DestroyWaypoint(); //TODO: Will need to get rid of
         // GameObject.FindObjectOfType<WaypointManager>().SpawnWaypoint();
         SpawnBody();
+
+        if (allNeatJets[0] != null)
+        {
+            CameraFollow cameraFollow = GameObject.FindObjectOfType<CameraFollow>();
+            cameraFollow.SetTarget(allNeatJets[0].transform);
+        }
+        
+        maxWaypointsHit = 0;
+        bestJetIndex = -1;
         currentGeneration += 1;
     }
 
