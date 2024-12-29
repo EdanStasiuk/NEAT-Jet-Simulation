@@ -38,6 +38,8 @@ public class JetController : MonoBehaviour
     private float alignmentThreshold = 0.95f; // Cosine of the angle threshold (e.g., 0.95 means within ~18 degrees)
     private float minimumThrustThreshold = 0.5f;
 
+    private LineRenderer lineRenderer;
+
     void Start()
     {
         gameObject.GetComponent<TrailRenderer>().startColor = myColor;
@@ -205,6 +207,23 @@ public class JetController : MonoBehaviour
             // Optional: Calculate the angle between the forward vector and the direction to the waypoint
             float angleToWaypoint = Vector3.Angle(transform.forward, directionToWaypoint);
             sensors[5] = angleToWaypoint / 180f; // Normalized angle (0 to 1)
+
+            // Draw a line for better display of main sensor
+            if (lineRenderer == null)
+            {
+                lineRenderer = gameObject.AddComponent<LineRenderer>();
+                lineRenderer.startWidth = 0.05f;
+                lineRenderer.endWidth = 0.05f;
+                lineRenderer.startColor = Color.green;
+                lineRenderer.endColor = Color.green;
+                lineRenderer.positionCount = 2; // Start and end points
+
+                lineRenderer.material = new Material(Shader.Find("Sprites/Default"));
+            }
+
+            lineRenderer.SetPosition(0, transform.position); // Jet's position
+            lineRenderer.SetPosition(1, currentWaypoint.position); // Waypoint's position
+
             Debug.DrawRay(transform.position, directionToWaypoint * rayDistance, Color.green);
         }
         else
