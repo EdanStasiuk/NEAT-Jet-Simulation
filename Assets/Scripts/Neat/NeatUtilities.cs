@@ -171,7 +171,48 @@ public class NeatUtilities : MonoBehaviour
 
    public static NeatGenome LoadGenome()
    {
-        string genomeString = File.ReadAllText(Application.dataPath + "/save.txt");
+        // TODO: There is probably a better way of doing so that the program can run with WebGL, but
+        // this simple fix is good enough for now since the save data seems to be about as good as the
+        // network is going to get as it is currently set up.
+        
+        // Use this for natively running within Unity:
+        // string genomeString = File.ReadAllText(Application.dataPath + "/save.txt");
+
+        // Use this for WebGL builds:
+        string genomeString = @"{
+            ""nodeGenes"": [
+                {""id"":0,""type"":0}, {""id"":1,""type"":0}, {""id"":2,""type"":0},
+                {""id"":3,""type"":0}, {""id"":4,""type"":0}, {""id"":5,""type"":0},
+                {""id"":6,""type"":1}, {""id"":7,""type"":1}, {""id"":8,""type"":1},
+                {""id"":9,""type"":1}, {""id"":10,""type"":2}, {""id"":11,""type"":2},
+                {""id"":12,""type"":2}
+            ],
+            ""connectionGenes"": [
+                {""inputNode"":2,""outputNode"":9,""weight"":-0.20087483525276185,""isActive"":false,""innovNum"":1},
+                {""inputNode"":0,""outputNode"":8,""weight"":-0.855819582939148,""isActive"":true,""innovNum"":2},
+                {""inputNode"":4,""outputNode"":8,""weight"":0.47371989488601687,""isActive"":true,""innovNum"":3},
+                {""inputNode"":3,""outputNode"":8,""weight"":-1.2001075744628907,""isActive"":true,""innovNum"":4},
+                {""inputNode"":2,""outputNode"":10,""weight"":0.2648876905441284,""isActive"":true,""innovNum"":5},
+                {""inputNode"":10,""outputNode"":9,""weight"":0.7483364939689636,""isActive"":false,""innovNum"":6},
+                {""inputNode"":3,""outputNode"":10,""weight"":-0.6453731060028076,""isActive"":true,""innovNum"":7},
+                {""inputNode"":4,""outputNode"":9,""weight"":-1.4624354839324952,""isActive"":false,""innovNum"":8},
+                {""inputNode"":10,""outputNode"":11,""weight"":0.9492435455322266,""isActive"":true,""innovNum"":9},
+                {""inputNode"":11,""outputNode"":9,""weight"":0.5852257013320923,""isActive"":true,""innovNum"":10},
+                {""inputNode"":10,""outputNode"":6,""weight"":-0.33515089750289919,""isActive"":true,""innovNum"":11},
+                {""inputNode"":5,""outputNode"":7,""weight"":-0.6649156808853149,""isActive"":true,""innovNum"":12},
+                {""inputNode"":4,""outputNode"":11,""weight"":0.652118980884552,""isActive"":true,""innovNum"":13},
+                {""inputNode"":2,""outputNode"":11,""weight"":-0.5490822196006775,""isActive"":true,""innovNum"":14},
+                {""inputNode"":1,""outputNode"":10,""weight"":-0.44497519731521609,""isActive"":true,""innovNum"":15},
+                {""inputNode"":11,""outputNode"":7,""weight"":0.7888258695602417,""isActive"":true,""innovNum"":16},
+                {""inputNode"":4,""outputNode"":10,""weight"":0.6561046242713928,""isActive"":true,""innovNum"":17},
+                {""inputNode"":4,""outputNode"":12,""weight"":0.677369236946106,""isActive"":true,""innovNum"":18},
+                {""inputNode"":12,""outputNode"":9,""weight"":-0.9692157506942749,""isActive"":true,""innovNum"":19},
+                {""inputNode"":5,""outputNode"":8,""weight"":-0.5081489682197571,""isActive"":true,""innovNum"":20},
+                {""inputNode"":3,""outputNode"":12,""weight"":-0.8913705945014954,""isActive"":true,""innovNum"":21},
+                {""inputNode"":2,""outputNode"":12,""weight"":0.46772655844688418,""isActive"":true,""innovNum"":22}
+            ]
+        }";
+
         NeatGenomeJson savedGenome = JsonUtility.FromJson<NeatGenomeJson>(genomeString);
         NeatGenome loadedGenome = new NeatGenome();
         foreach (NodeGeneJson savedNode in savedGenome.nodeGenes)
